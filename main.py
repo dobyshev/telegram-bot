@@ -22,7 +22,7 @@ async def start(message: Message):
                 InlineKeyboardButton(
                     text="🚀 Открыть мини‑приложение",
                     web_app=WebAppInfo(
-                        url="ТВОЯ_NETLIFY_ССЫЛКА"
+                        url="https://lucky-kataifi-a43bb5.netlify.app"
                     )
                 )
             ]
@@ -61,3 +61,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
