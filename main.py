@@ -1,12 +1,13 @@
 import os
+import asyncio
 from aiohttp import web
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from aiogram.filters import Command
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-
 WEBHOOK_PATH = "/webhook"
+WEBHOOK_SECRET = "secret"
 BASE_WEBHOOK_URL = "https://telegram-bot-2f7l.onrender.com"
 WEBHOOK_URL = f"{BASE_WEBHOOK_URL}{WEBHOOK_PATH}"
 
@@ -38,6 +39,12 @@ async def handle_webapp(message: Message):
     await message.answer(f"✅ Получил данные: {data}")
 
 
+async def handle(request):
+    update = await request.json()
+    await dp.feed_update(bot, update)
+    return web.Response()
+
+
 async def on_startup(app):
     await bot.set_webhook(WEBHOOK_URL)
 
@@ -48,17 +55,12 @@ async def on_shutdown(app):
 
 def main():
     app = web.Application()
+    app.router.add_post(WEBHOOK_PATH, handle)
+    app.on_startup.append(on_startup)
+    app.on_shutdown.append(on_shutdown)
 
-    dp.startup.register(on_startup)
-    dp.shutdown.register(on_shutdown)
-
-    dp.run_webhook(
-        webhook_path=WEBHOOK_PATH,
-        host="0.0.0.0",
-        port=int(os.environ.get("PORT", 10000)),
-    )
+    web.run_app(app, host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
 
 
-if __name__ == "__main__":
+if name == "__main__":
     main()
-
